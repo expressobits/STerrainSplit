@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STerrainSplit", "STerrainSplit\STerrainSplit.csproj", "{1B9EA503-9B3E-431D-B72C-89ECC2131731}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B9EA503-9B3E-431D-B72C-89ECC2131731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B9EA503-9B3E-431D-B72C-89ECC2131731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B9EA503-9B3E-431D-B72C-89ECC2131731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B9EA503-9B3E-431D-B72C-89ECC2131731}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {640DD233-72C2-460F-BB47-7B6FCE23CCE8}
+	EndGlobalSection
+EndGlobal

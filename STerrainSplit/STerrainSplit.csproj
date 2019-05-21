@@ -13,4 +13,8 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;../../ProBike/Assets/Plugins/$(ProjectName).dll&quot;" />
+  </Target>
+
 </Project>

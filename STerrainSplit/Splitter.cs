@@ -69,7 +69,7 @@ namespace STerrainSplit
                 {
 
                     int number = (terrainsCountZ * j) + i;
-                    progressCaption = progressCaptionBase + " - " + number + "/" + i * j;
+                    progressCaption = progressCaptionBase + " - " + number + "/" + terrainsCountX * terrainsCountZ;
                     EditorUtility.DisplayProgressBar(progressCaption, "Process " + number, (float)number / terrainsCountX * terrainsCountZ);
 
                     TerrainData td = new TerrainData();
@@ -100,9 +100,11 @@ namespace STerrainSplit
 
             ProcessParentProperties(genTer, parentTerrain);
             TranslatePosition(tgo, x, z, parentTerrain);
-            
+
             genTer.terrainData.SetHeights(0, 0, SplitHeight(td, parentTerrain, x, z));
-            genTer.terrainData.SetAlphamaps(0, 0, SplitSplatMap(td,tgo,parentTerrain,x,z));
+            genTer.terrainData.SetAlphamaps(0, 0, SplitSplatMap(td, parentTerrain, x, z));
+            SplitDetailMap(td, parentTerrain, x, z, genTer);
+            SplitTreeData(td, parentTerrain, x, z, genTer);
 
         }
 
@@ -152,7 +154,6 @@ namespace STerrainSplit
             //                                     );
         }
 
-
         public float[,] SplitHeight(TerrainData td, Terrain parentTerrain, int numberx, int numberz)
         {
             Debug.Log("Split height");
@@ -201,8 +202,7 @@ namespace STerrainSplit
 
         }
 
-
-        public float[,,] SplitSplatMap(TerrainData td, GameObject tgo, Terrain parentTerrain, int numberx, int numberz)
+        public float[,,] SplitSplatMap(TerrainData td, Terrain parentTerrain, int numberx, int numberz)
         {
             td.alphamapResolution = parentTerrain.terrainData.alphamapResolution / terrainsCountX;
 
@@ -244,6 +244,80 @@ namespace STerrainSplit
             EditorUtility.ClearProgressBar();
             return peaceSplat;
 
+        }
+
+        public void SplitDetailMap(TerrainData td, Terrain parentTerrain, int numberx, int numberz,Terrain genTer)
+        {
+            td.SetDetailResolution(parentTerrain.terrainData.detailResolution / terrainsCountX, 8);
+
+            for (int detLay = 0; detLay < parentTerrain.terrainData.detailPrototypes.Length; detLay++)
+            {
+
+                genTer.terrainData.SetDetailLayer(0, 0, detLay, DetailLayer(parentTerrain,numberx,numberz,detLay));
+            }
+        }
+
+        public int[,] DetailLayer(Terrain parentTerrain,int numberx,int numberz,int detLay)
+        {
+            int[,] parentDetail = parentTerrain.terrainData.GetDetailLayer(0, 0, parentTerrain.terrainData.detailResolution, parentTerrain.terrainData.detailResolution, detLay);
+
+            int[,] peaceDetail = new int[parentTerrain.terrainData.detailResolution / terrainsCountX,
+                                          parentTerrain.terrainData.detailResolution / terrainsCountX
+                                        ];
+
+            // Shift calc
+            int detailShift = parentTerrain.terrainData.detailResolution / terrainsCountX;
+
+            int startX = 0;
+            int startY = 0;
+            int endX = parentTerrain.terrainData.detailResolution / terrainsCountX;
+            int endY = parentTerrain.terrainData.detailResolution / terrainsCountX;
+
+            // iterate				
+            for (int x = startX; x < endX; x++)
+            {
+                EditorUtility.DisplayProgressBar(progressCaption, "Processing detail...", (float)x / (endX - startX));
+                for (int y = startY; y < endY; y++)
+                {
+                    int xShift = detailShift * numberz;
+                    int yShift = detailShift * numberx;
+
+                    int ph = parentDetail[x + xShift, y + yShift];
+                    peaceDetail[x, y] = ph;
+                }
+                
+            }
+            EditorUtility.ClearProgressBar();
+            return peaceDetail;
+        }
+
+        public void SplitTreeData(TerrainData td,Terrain parentTerrain,int numberx,int numberz,Terrain genTer)
+        {
+            for (int t = 0; t < parentTerrain.terrainData.treeInstances.Length; t++)
+            {
+
+                EditorUtility.DisplayProgressBar(progressCaption, "Processing trees...", (float)t / parentTerrain.terrainData.treeInstances.Length);
+
+                // Get tree instance					
+                TreeInstance ti = parentTerrain.terrainData.treeInstances[t];
+
+                float dxStart = ((float)numberz / (float)terrainsCountX);
+                float dxEnd = ((float)(numberz + 1) / (float)terrainsCountX);
+                float dzStart = ((float)numberx / (float)terrainsCountX);
+                float dzEnd = ((float)(numberx  + 1)/ (float)terrainsCountX);
+
+
+                if (ti.position.x > dxStart && ti.position.x < dxEnd &&
+                    ti.position.z > dzStart && ti.position.z < dzEnd)
+                {
+                    // Recalculate new tree position	
+                    ti.position = new Vector3(ti.position.x, ti.position.y, ti.position.z );
+
+                    // Add tree instance						
+                    genTer.AddTreeInstance(ti);
+                }
+
+            }
         }
     }
 }
